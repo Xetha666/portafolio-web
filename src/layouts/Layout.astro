@@ -1,14 +1,22 @@
+---
+import Background from "@/components/Background.astro";
+import "@/styles/global.css";
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
+		<title>Portafolio</title>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		
+		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 	</head>
-	<body>
+	<body class="font-body selection:bg-primary/30 selection:text-primary">
+		<Background/>
 		<slot />
 	</body>
 </html>
