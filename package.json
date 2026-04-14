@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@google/stitch-sdk": "^0.1.0",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.6",
     "tailwind-animations": "^1.0.1",
