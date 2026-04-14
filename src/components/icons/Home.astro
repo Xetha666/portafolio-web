@@ -1,0 +1,9 @@
+---
+const { class: className, ...props } = Astro.props;
+---
+<svg viewBox="0 0 24 24" class={className} {...props}>
+  <g fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2">
+    <path stroke-linecap="square" d="m1 11 11-9 11 9"/>
+    <path d="M5 13v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7m-7 9v-4"/>
+  </g>
+</svg>
