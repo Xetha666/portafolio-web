@@ -1,0 +1,159 @@
+---
+---
+<div class="star-field-container" aria-hidden="true">
+  <canvas id="star-canvas"></canvas>
+</div>
+
+<style>
+  .star-field-container {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--color-background);
+    background-image: radial-gradient(circle at 50% 50%, var(--color-surface-container) 0%, var(--color-background) 100%);
+    transition: background-color 0.5s ease, background-image 0.5s ease;
+  }
+  
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+
+<script>
+  // Configuración extraída de tu imagen
+  const CONFIG = {
+    stars: 50,
+    starSpeed: 0.5,
+    meteorFreq: 3000, // 3 segundos en milisegundos
+    meteorSpeed: 10
+  };
+
+  const canvas = document.getElementById('star-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+
+  let width: number, height: number;
+  let stars: any[] = [];
+  let meteors: any[] = [];
+  let lastMeteorTime = 0;
+
+  // Ajustar tamaño del canvas a la pantalla
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+
+  // Inicializar estrellas con direcciones aleatorias
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < CONFIG.stars; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        // Velocidad aleatoria en X e Y basada en tu intensidad (0.5)
+        vx: (Math.random() - 0.5) * (CONFIG.starSpeed * 2),
+        vy: (Math.random() - 0.5) * (CONFIG.starSpeed * 2),
+        radius: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.5 + 0.3
+      });
+    }
+  }
+
+  // Bucle de animación
+  function animate(time: number) {
+    if (!ctx) return;
+    if (!lastMeteorTime) lastMeteorTime = time;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Detectar si el modo oscuro está activo en el HTML
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    // Colores basados en tus variables globales
+    // Modo Claro: Estrellas Primary (#006a6e), Meteoros Outline-variant
+    // Modo Oscuro: Estrellas Blancas, Meteoros Primary-container (#00f4fe)
+    const starColor = isDark ? '255, 255, 255' : '0, 106, 110';
+    const meteorColor = isDark ? '0, 244, 254' : '196, 198, 204'; 
+
+    // --- Dibujar y mover Estrellas ---
+    stars.forEach(star => {
+      star.x += star.vx;
+      star.y += star.vy;
+
+      // Rebote en los bordes (física perfecta)
+      if (star.x <= 0 || star.x >= width) star.vx *= -1;
+      if (star.y <= 0 || star.y >= height) star.vy *= -1;
+
+      // Mantener dentro de los límites (por si se redimensiona la ventana)
+      star.x = Math.max(0, Math.min(width, star.x));
+      star.y = Math.max(0, Math.min(height, star.y));
+
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${starColor}, ${star.alpha})`;
+      
+      // Brillo solo en modo oscuro
+      if (isDark) {
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = `rgba(${starColor}, 0.8)`;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+      ctx.fill();
+    });
+
+    // Limpiar sombra para los meteoros
+    ctx.shadowBlur = 0;
+
+    // --- Generar Meteoros ---
+    if (time - lastMeteorTime > CONFIG.meteorFreq) {
+      // Generar 1 o 2 meteoros a la vez
+      const count = Math.floor(Math.random() * 2) + 1;
+      for(let i = 0; i < count; i++) {
+        meteors.push({
+          x: Math.random() * width + (width * 0.2), // Aparecen hacia la derecha
+          y: (Math.random() * height * 0.3) - 100,  // Aparecen arriba
+          length: Math.random() * 60 + 40,
+          thickness: Math.random() * 1.5 + 0.5
+        });
+      }
+      lastMeteorTime = time;
+    }
+
+    // --- Dibujar y mover Meteoros ---
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      let m = meteors[i];
+      // Movimiento diagonal (abajo e izquierda)
+      m.x -= CONFIG.meteorSpeed;
+      m.y += CONFIG.meteorSpeed;
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      // La cola del meteoro va hacia arriba a la derecha (+length, -length)
+      ctx.lineTo(m.x + m.length, m.y - m.length); 
+      ctx.lineWidth = m.thickness;
+      
+      // Degradado para la estela
+      const gradient = ctx.createLinearGradient(m.x, m.y, m.x + m.length, m.y - m.length);
+      gradient.addColorStop(0, `rgba(${meteorColor}, 1)`);
+      gradient.addColorStop(1, `rgba(${meteorColor}, 0)`);
+      
+      ctx.strokeStyle = gradient;
+      ctx.stroke();
+
+      // Eliminar meteoros que ya salieron de la pantalla
+      if (m.y > height + m.length || m.x < -m.length) {
+        meteors.splice(i, 1);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Inicialización
+  window.addEventListener('resize', resize);
+  resize();
+  initStars();
+  requestAnimationFrame(animate);
+</script>
