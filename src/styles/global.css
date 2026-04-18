@@ -1,3 +1,128 @@
 @import "tailwindcss";
 @import 'tailwind-animations';
-@plugin "daisyui";
+@plugin 'daisyui';
+
+/* Force Tailwind v4 to use .dark class for the dark: variant */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/fonts/SpaceGrotesk.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-space: "Space Grotesk", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-manrope: "Manrope", sans-serif;
+  
+  --font-headline: var(--font-space);
+  --font-body: var(--font-inter);
+  --font-label: var(--font-manrope);
+
+  /* Light Theme (Base) - Renamed to avoid DaisyUI conflicts */
+  --color-brand-background: #fdfdfd;
+  --color-brand-on-background: #0b0e13;
+  --color-brand-surface: #ffffff;
+  --color-brand-on-surface: #1c2027;
+  --color-brand-on-surface-variant: #52555b;
+  --color-brand-surface-container: #f0f2f5;
+  --color-brand-surface-container-highest: #e2e4e9;
+  --color-brand-surface-container-lowest: #ffffff;
+  --color-brand-primary: #006a6e;
+  --color-brand-on-primary: #ffffff;
+  --color-brand-primary-container: #a1faff;
+  --color-brand-on-primary-container: #002021;
+  --color-brand-secondary: #7900c6;
+  --color-brand-github: #24292f;
+  --color-brand-discord: #5865F2;
+  --color-brand-tertiary: #00652b;
+  --color-brand-outline: #73757c;
+  --color-brand-outline-variant: #c4c6cc;
+  
+  --color-tech-astro: #FF5D01;
+  --color-tech-react: #61DAFB;
+  --color-tech-tailwind: #06B6D4;
+
+  --blur-huge: 100px;
+  --text-small: 0.625rem;
+}
+
+/* Override variables for Dark Mode */
+.dark {
+  --color-brand-background: #0b0e13;
+  --color-brand-on-background: #f5f6fe;
+  --color-brand-surface: #0b0e13;
+  --color-brand-on-surface: #f5f6fe;
+  --color-brand-on-surface-variant: #a9abb2;
+  --color-brand-surface-container: #161a20;
+  --color-brand-surface-container-highest: #22262d;
+  --color-brand-surface-container-lowest: #000000;
+  --color-brand-primary: #a1faff;
+  --color-brand-on-primary: #006165;
+  --color-brand-primary-container: #00f4fe;
+  --color-brand-on-primary-container: #003739;
+  --color-brand-secondary: #c47fff;
+  --color-brand-github: #24292f;
+  --color-brand-tertiary: #a7ffb3;
+  --color-brand-outline: #45484e;
+  --color-brand-outline-variant: #34363a;
+  --color-tech-astro: #FF5D01;
+  --color-tech-react: #61DAFB;
+  --color-tech-tailwind: #06B6D4;
+}
+
+body {
+    background-color: transparent;
+    color: var(--color-brand-on-surface);
+    overflow-x: hidden;
+    min-height: max(32rem, 100dvh);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.star-field-container {
+    background-color: var(--color-brand-background);
+    background-image: radial-gradient(circle at 50% 50%, var(--color-brand-surface-container) 0%, var(--color-brand-background) 100%);
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .glass-panel {
+    background: rgba(28, 32, 39, 0.3);
+}
+
+.ion-drive-button {
+    background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-container) 100%);
+    box-shadow: 0 0 20px rgba(0, 229, 238, 0.2);
+}
+
+.ghost-border {
+    border: 1px solid var(--color-brand-outline-variant);
+    opacity: 0.8;
+}
+
+.dark .text-glow {
+    text-shadow: 0 0 15px rgba(161, 250, 255, 0.4);
+}
