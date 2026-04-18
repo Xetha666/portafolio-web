@@ -14,7 +14,10 @@ import VercelIcon from "@/components/icons/VercelIcon.astro";
 import ProjectModal from "@/components/ProjectModal.astro";
 import type { Tag } from "@/types/project";
 import { Image } from 'astro:assets';
+import ContactSupport from "public/svg/ContactSupport.svg";
 import LockIcon from "public/svg/Lock.svg";
+import OpenCode from "public/svg/OpenCode.svg";
+import OpenDemo from "public/svg/OpenDemo.svg";
 import PublicIcon from "public/svg/World.svg";
 
 const { title, description, image, tags, demoUrl, repoUrl, isPrivate = false, class: className } = Astro.props;
@@ -107,22 +110,16 @@ const iconMap = {
         rel={isPrivate ? "" : "noopener noreferrer"}
       >
         {isPrivate ? "Solicitar Acceso" : "Ver Demo"}
-        <span class="material-symbols-outlined text-sm" aria-hidden="true">
-          {isPrivate ? 'contact_support' : 'open_in_new'}
-        </span>
+        {isPrivate ? <ContactSupport class="size-6 active:scale-90 hover:scale-110 transition-transform" aria-hidden="true" /> : <OpenDemo class="size-6 active:scale-90 hover:scale-110 transition-transform" aria-hidden="true" />}
       </a>
       
       {!isPrivate && (
-        <a 
-          class="text-brand-on-surface-variant hover:text-brand-on-surface transition-colors focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-on-surface" 
+        <a class="text-brand-on-surface-variant hover:text-brand-on-surface focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-on-surface transition active:scale-90 hover:scale-110" 
           href={repoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Ver código fuente de ${title} en GitHub`}
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">
-            rebase_edit
-          </span>
+          aria-label={`Ver código fuente de ${title} en GitHub`}>
+          <OpenCode class="size-6" aria-hidden="true" />
         </a>
       )}
     </footer>
