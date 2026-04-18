@@ -1,12 +1,15 @@
 ---
 import ThemeController from "@/components/ThemeController.astro";
 import { Options } from "@/types/menu";
+import { Image } from "astro:assets";
+import logoLight from "@/assets/logo-light.webp";
+import logoDark from "@/assets/logo-dark.webp";
 ---
 
 <nav class="flex items-center justify-between px-6 py-3 rounded-full mt-4 mx-auto w-11/12 max-w-4xl glass-panel border border-brand-outline-variant/30 nav-shadow md:sticky md:top-4 z-50">
   <a href="/" class="transition-transform duration-300 active:scale-95">
-    <img src="/logo-light.webp" alt="bryan.dev Logo" class="h-8 w-auto block dark:hidden" />
-    <img src="/logo-dark.webp" alt="bryan.dev Logo" class="h-8 w-auto hidden dark:block" />
+    <Image src={logoLight} alt="bryan.dev Logo" class="h-8 w-auto block dark:hidden" loading="eager" />
+    <Image src={logoDark} alt="bryan.dev Logo" class="h-8 w-auto hidden dark:block" loading="eager" />
   </a>
 
   <!-- Desktop Menu -->
