@@ -1,4 +1,6 @@
 ---
+import logoDark from "@/assets/logo-dark.webp";
+import logoLight from "@/assets/logo-light.webp";
 import Background from "@/components/Background.astro";
 import "@/styles/global.css";
 
@@ -20,8 +22,8 @@ const {
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/webp" href={logoLight.src} media="(prefers-color-scheme: light)" />
+		<link rel="icon" type="image/webp" href={logoDark.src} media="(prefers-color-scheme: dark)" />
 		<meta name="generator" content={Astro.generator} />
 		
 		<link rel="canonical" href={Astro.url} />
