@@ -1,0 +1,182 @@
+---
+import type { ImageMetadata } from 'astro';
+import CardProject from "@/components/CardProject.astro";
+import AstroDB from "@/components/icons/AstroDB.astro";
+import AstroIcon from "@/components/icons/AstroIcon.astro";
+import CloudflareIcon from "@/components/icons/Cloudflare.astro";
+import DaisyuiIcon from "@/components/icons/Daisyui.astro";
+import GithubActionsIcon from "@/components/icons/GithubActions.astro";
+import JavaScriptIcon from "@/components/icons/JavaScript.astro";
+import ReactIcon from "@/components/icons/React.astro";
+import TailwindIcon from "@/components/icons/Tailwind.astro";
+import TypeScriptIcon from "@/components/icons/TypeScript.astro";
+import UnknownIcon from "@/components/icons/Unknown.astro";
+import VercelIcon from "@/components/icons/VercelIcon.astro";
+import { fetchGithubRepos } from "@/services/github";
+
+const projects = await fetchGithubRepos();
+
+// Load all optimized images from the projects folder
+const projectImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/projects/*.{jpeg,jpg,png,gif,webp}', { eager: true });
+
+// Establecemos una caché en Cloudflare/Navegador de 1 hora para evitar golpear el límite de peticiones de GitHub (Rate Limits) en cada visita
+Astro.response.headers.set('Cache-Control', 'public, max-age=3600');
+
+// Extract unique technologies for filters
+const allTags = projects.flatMap(p => p.tags);
+const uniqueTechs = Array.from(
+  new Map(allTags.map(tag => [tag.icon, tag])).values()
+).sort((a, b) => a.name.localeCompare(b.name));
+
+const iconMap = {
+  Astro: AstroIcon,
+  AstroDB: AstroDB,
+  React: ReactIcon,
+  Tailwind: TailwindIcon,
+  Daisyui: DaisyuiIcon,
+  JavaScript: JavaScriptIcon,
+  TypeScript: TypeScriptIcon,
+  GithubActions: GithubActionsIcon,
+  Cloudflare: CloudflareIcon,
+  Vercel: VercelIcon,
+  Unknown: UnknownIcon,
+};
+---
+
+
+<div class="w-full">
+  <div class="flex flex-col gap-8">
+    <!-- Title always on top -->
+    <div class="flex flex-col gap-2">
+      <h2 class="font-headline text-3xl font-bold mb-2">Proyectos Seleccionados</h2>
+      <p class="font-body text-brand-on-surface-variant">Explora mis trabajos más recientes.</p>
+    </div>
+
+    <!-- Filters centered below title -->
+    <div class="flex flex-col items-center gap-4">
+      <span class="font-label text-xs font-bold uppercase tracking-widest text-brand-on-surface-variant flex items-center gap-2">
+        <span class="size-1.5 rounded-full bg-brand-primary animate-pulse"></span>
+        Filtrar por tecnología
+      </span>
+      <nav class="flex flex-wrap justify-center gap-4" aria-label="Filtrar proyectos">
+        {uniqueTechs.map(tech => {
+          const Icon = iconMap[tech.icon as keyof typeof iconMap];
+          return (
+            <button 
+              type="button"
+              aria-pressed="false"
+              aria-label={`Filtrar por ${tech.name}`}
+              class="filter-btn group cursor-pointer flex flex-col items-center justify-center gap-2 w-24 h-24 p-2 rounded-2xl glass-panel ghost-border transition-all duration-300 hover:border-brand-primary/50 text-center"
+              data-tech={tech.icon}
+            >
+              <div class="size-8 flex items-center justify-center rounded-xl bg-brand-surface-container-highest group-hover:bg-brand-primary/20 transition-colors shrink-0">
+                {Icon && <Icon class="size-5" />}
+              </div>
+              <span class="font-label text-[9px] leading-tight font-bold uppercase tracking-tighter text-balance wrap-break-word line-clamp-2">{tech.name}</span>
+            </button>
+          )
+        })}
+      </nav>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 projects-grid">
+      {projects.map(project => {
+        // Resolve the image: Look in local assets first (matching repo name), then fallback to GitHub OG image
+        const localImage = projectImages[`/src/assets/projects/${project.repoName}.webp`]?.default;
+        
+        return <CardProject {...project} image={localImage || project.image} />
+      })}
+    </div>
+  </div>
+</div>
+
+<style>
+  .projects-grid {
+    transition: all 0.5s ease-in-out;
+  }
+  
+  .filter-btn.active .size-8 {
+    background-color: color-mix(in srgb, var(--color-brand-on-primary) 20%, transparent);
+  }
+
+  /* Prevent layout shift during animation */
+  .card-project {
+    backface-visibility: hidden;
+    transform-origin: center;
+  }
+</style>
+
+<script>
+  function setupFilters() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = document.querySelectorAll<HTMLElement>('.card-project');
+    // Set of currently active filters; empty = show all
+    const activeFilters = new Set<string>();
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tech = btn.getAttribute('data-tech');
+        if (!tech) return;
+
+        // Toggle: add if not present, remove if already active
+        if (activeFilters.has(tech)) {
+          activeFilters.delete(tech);
+        } else {
+          activeFilters.add(tech);
+        }
+
+        applyFilters();
+      });
+    });
+
+    function applyFilters() {
+      // Update button active state
+      buttons.forEach(btn => {
+        const tech = btn.getAttribute('data-tech') ?? '';
+        const isActive = activeFilters.has(tech);
+
+        if (isActive) {
+          btn.classList.add('active', 'bg-brand-primary', 'text-brand-on-primary');
+          btn.classList.remove('glass-panel', 'ghost-border');
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.classList.remove('active', 'bg-brand-primary', 'text-brand-on-primary');
+          btn.classList.add('glass-panel', 'ghost-border');
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+
+      // Update card visibility
+      cards.forEach(card => {
+        const techs = card.dataset.techs?.split(',') ?? [];
+        // Show all if no filter selected, otherwise show if any tech matches
+        const isVisible =
+          activeFilters.size === 0 ||
+          techs.some(t => activeFilters.has(t));
+
+        if (isVisible) {
+          card.style.display = 'flex';
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          }, 10);
+        } else {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            card.style.display = 'none';
+          }, 500);
+        }
+      });
+    }
+
+    // Initial state: no filters active, all cards visible
+    applyFilters();
+  }
+
+  // Run on first load
+  setupFilters();
+
+  // Run on view transition (if using Astro View Transitions)
+  document.addEventListener('astro:after-swap', setupFilters);
+</script>
