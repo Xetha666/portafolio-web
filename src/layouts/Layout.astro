@@ -1,21 +1,67 @@
 ---
 import Background from "@/components/Background.astro";
 import "@/styles/global.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { 
+	title = "Bryan Dev | Fullstack Developer Portfolio", 
+	description = "Explora el portafolio de Bryan, desarrollador Fullstack especializado en interfaces modernas con React, Astro y Tailwind CSS." 
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="es" class="scroll-smooth">
 	<head>
-		<title>Portafolio</title>
+		<title>{title}</title>
 		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		
-		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+		<link rel="canonical" href={Astro.url} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:site_name" content="Bryan Dev | Portafolio" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content="/og-image.png" />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content="/og-image.png" />
+
+		<!-- Discord / Slack Theme Color -->
+		<meta name="theme-color" content="#006a6e" />
+
+		<!-- SEO Final Polish -->
+		<meta name="robots" content="index, follow" />
+		<meta name="author" content="Bryan" />
+
+		<!-- JSON-LD Structured Data -->
+		<script type="application/ld+json" is:inline set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "Person",
+			"name": "Bryan",
+			"url": Astro.url,
+			"jobTitle": "Fullstack Developer",
+			"description": description,
+			"sameAs": [
+				"https://github.com/Xetha666"
+			]
+		})} />
 	</head>
-	<body class="font-body selection:bg-primary/30 selection:text-primary">
+	<body class="font-body selection:bg-brand-primary/30 selection:text-brand-primary">
 		<Background/>
 		<slot />
 	</body>
