@@ -1,0 +1,80 @@
+---
+import ThemeController from "@/components/ThemeController.astro";
+import { Options } from "@/types/menu";
+---
+
+<nav class="flex items-center justify-between px-6 py-3 rounded-full mt-4 mx-auto w-11/12 max-w-4xl glass-panel border border-brand-outline-variant/30 nav-shadow md:sticky md:top-4 z-50">
+  <a href="/" class="transition-transform duration-300 active:scale-95">
+    <img src="/logo-light.webp" alt="bryan.dev Logo" class="h-8 w-auto block dark:hidden" />
+    <img src="/logo-dark.webp" alt="bryan.dev Logo" class="h-8 w-auto hidden dark:block" />
+  </a>
+
+  <!-- Desktop Menu -->
+  <div class="hidden md:flex items-center gap-1 bg-brand-on-background/5 dark:bg-brand-on-surface/5 p-1 rounded-full border border-brand-outline-variant/10">
+    {
+      Options.map((option) => {
+        return (
+          <a 
+            href={option.href} 
+            class:list={[
+              "flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-500 ease-out text-sm font-medium",
+              "text-brand-on-surface-variant hover:text-brand-primary dark:text-brand-on-surface-variant dark:hover:text-brand-primary hover:bg-brand-surface-container/50 dark:hover:bg-brand-primary/5"
+            ]}
+            data-nav-link={option.href.replace("#", "")}
+          >
+            <span>{option.name}</span>
+          </a>
+        );
+      })
+    }
+  </div>
+
+  <button aria-label="Cambiar tema">
+    <ThemeController/>
+  </button>
+</nav>
+
+<script>
+  function setupNavbar() {
+    const navLinks = document.querySelectorAll("nav.md\\:sticky [data-nav-link]");
+    const sections = document.querySelectorAll("section[id]");
+
+    const activeClasses = ["text-brand-primary", "bg-brand-primary/10", "dark:text-brand-primary", "dark:bg-brand-primary/10"];
+    const inactiveClasses = ["text-brand-on-surface-variant", "dark:text-brand-on-surface-variant"];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -40% 0px",
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            if (link.getAttribute("data-nav-link") === id) {
+              link.classList.add(...activeClasses);
+              link.classList.remove(...inactiveClasses);
+            } else {
+              link.classList.remove(...activeClasses);
+              link.classList.add(...inactiveClasses);
+            }
+          });
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  setupNavbar();
+  document.addEventListener('astro:after-swap', setupNavbar);
+</script>
+
+<style>
+  .nav-shadow {
+    box-shadow: 0 0 20px rgba(0, 106, 110, 0.1);
+  }
+</style>
