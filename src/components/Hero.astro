@@ -1,0 +1,35 @@
+---
+import RightArrow from '/public/svg/RightArrow.svg'
+import Rocket from '/public/svg/Rocket.svg'
+---
+<section class="mb-24 mt-12 scroll-mt-40 md:scroll-mt-44" id="hero">
+  <div class="flex flex-col items-start gap-6">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/20">
+      <Rocket class="text-brand-primary size-3.5"/>
+      <span class="font-label select-none text-small uppercase tracking-widest text-brand-primary">Disponibilidad Inmediata</span>
+    </div>
+    <h1 class="font-headline select-none text-5xl md:text-7xl font-bold leading-tight tracking-tighter text-glow">
+      Hola, soy Bryan
+      <span class="block text-transparent bg-clip-text bg-linear-to-r from-brand-primary via-brand-secondary to-brand-tertiary">desarrollador web</span>
+    </h1>
+    <p class="font-body select-none text-lg text-brand-on-surface-variant max-w-xl leading-relaxed">
+      Especializado en construir interfaces inmersivas y escalables. Transformando ideas complejas en experiencias digitales fluidas a través del código.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4">
+      <button 
+        type="button"
+        aria-label="Ver mis proyectos destacados"
+        class="ion-drive-button cursor-pointer px-8 py-4 rounded-xl font-bold font-label uppercase tracking-widest text-sm flex items-center justify-center gap-2 text-black active:scale-95 transition-transform"
+      >
+        Ver Proyectos
+        <RightArrow class="text-base size-4"/>
+      </button>
+      <a 
+        href="#contact"
+        class="glass-panel cursor-pointer ghost-border px-8 py-4 rounded-xl text-brand-primary font-bold font-label uppercase tracking-widest text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+      >
+        Contactar
+      </a>
+    </div>
+  </div>
+</section>
