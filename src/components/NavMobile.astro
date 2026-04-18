@@ -2,7 +2,7 @@
 import { Options } from "@/types/menu";
 import Home from "@/components/icons/Home.astro";
 import Projects from "@/components/icons/Projects.astro";
-import About from "@/components/icons/About.astro";
+import About from "@/components/icons/AboutIcon.astro";
 import Contact from "@/components/icons/Contact.astro";
 
 const IconMap: Record<string, any> = {
@@ -13,7 +13,7 @@ const IconMap: Record<string, any> = {
 };
 ---
 
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 md:hidden bg-slate-900/60 dark:bg-black/60 backdrop-blur-2xl border-t border-cyan-500/20 rounded-t-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 md:hidden glass-panel border-t border-brand-outline-variant/30 rounded-t-4xl shadow-nav dark:shadow-nav-dark">
   {
     Options.map((option, index) => {
       const Icon = IconMap[option.name];
@@ -21,8 +21,10 @@ const IconMap: Record<string, any> = {
         <a 
           href={option.href} 
           class:list={[
-            "flex flex-col items-center justify-center px-4 py-1 rounded-xl transition duration-300 ease-out active:translate-y-[-2px]",
-            index === 0 ? "text-cyan-300 bg-cyan-500/10" : "text-slate-500 hover:text-cyan-400"
+            "flex flex-col items-center justify-center px-4 py-1 rounded-xl transition-all duration-300 ease-out active:scale-95",
+            index === 0 
+              ? "text-brand-primary bg-brand-primary/10 dark:text-brand-primary dark:bg-brand-primary/10" 
+              : "text-brand-on-surface hover:text-brand-primary dark:text-brand-on-surface-variant dark:hover:text-brand-primary"
           ]}
           data-nav-link={option.href.replace("#", "")}
         >
@@ -34,36 +36,51 @@ const IconMap: Record<string, any> = {
   }
 </nav>
 
+<style>
+  .shadow-nav {
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.05);
+  }
+
+  .shadow-nav-dark {
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  }
+</style>
+
 <script>
-  const navLinks = document.querySelectorAll("[data-nav-link]");
-  const sections = document.querySelectorAll("section[id]");
+  function setupNavMobile() {
+    const navLinks = document.querySelectorAll("nav.bottom-0 [data-nav-link]");
+    const sections = document.querySelectorAll("section[id]");
 
-  const activeClasses = ["text-cyan-300", "bg-cyan-500/10"];
-  const inactiveClasses = ["text-slate-500", "hover:text-cyan-400"];
+    const activeClasses = ["text-brand-primary", "bg-brand-primary/10", "dark:text-brand-primary", "dark:bg-brand-primary/10"];
+    const inactiveClasses = ["text-brand-on-surface", "dark:text-brand-on-surface-variant"];
 
-  const observerOptions = {
-    root: null,
-    rootMargin: "-40% 0px -80% 0px",
-    threshold: 0,
-  };
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -40% 0px",
+      threshold: 0,
+    };
 
-  const observerCallback = (entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute("id");
-        navLinks.forEach((link) => {
-          if (link.getAttribute("data-nav-link") === id) {
-            link.classList.add(...activeClasses);
-            link.classList.remove(...inactiveClasses);
-          } else {
-            link.classList.remove(...activeClasses);
-            link.classList.add(...inactiveClasses);
-          }
-        });
-      }
-    });
-  };
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            if (link.getAttribute("data-nav-link") === id) {
+              link.classList.add(...activeClasses);
+              link.classList.remove(...inactiveClasses);
+            } else {
+              link.classList.remove(...activeClasses);
+              link.classList.add(...inactiveClasses);
+            }
+          });
+        }
+      });
+    };
 
-  const observer = new IntersectionObserver(observerCallback, observerOptions);
-  sections.forEach((section) => observer.observe(section));
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  setupNavMobile();
+  document.addEventListener('astro:after-swap', setupNavMobile);
 </script>
