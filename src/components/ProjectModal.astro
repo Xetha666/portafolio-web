@@ -1,0 +1,109 @@
+---
+import { Image } from 'astro:assets';
+import Close from "@/components/icons/CloseIcon.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  image: any;
+}
+
+const { id, title, image } = Astro.props;
+---
+
+<dialog 
+  id={id}
+  class="project-modal p-0 bg-transparent w-full h-full max-w-none max-h-none border-0 overflow-hidden outline-hidden fixed inset-0 z-100"
+>
+  <div class="w-full h-full flex items-center justify-center relative bg-transparent">
+    <button 
+      class="close-modal-btn cursor-pointer absolute top-6 right-6 md:right-10 z-101 size-12 flex items-center justify-center rounded-full transition-all duration-300 backdrop-blur-md border-none outline-none bg-transparent hover:bg-white/10 hover:scale-110 active:scale-90 focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-on-surface"
+      aria-label="Cerrar vista preliminar"
+    >
+      <Close class="size-12" />
+    </button>
+    <Image 
+      src={image as any} 
+      alt={`Vista completa de ${title}`} 
+      class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl animate-fade-in animate-scale-up"
+    />
+  </div>
+</dialog>
+
+<script>
+  function setupModals() {
+    const images = document.querySelectorAll<HTMLImageElement>('.project-image');
+    
+    images.forEach(img => {
+      // Avoid multiple listeners if re-running
+      if (img.dataset.modalSetup) return;
+      img.dataset.modalSetup = 'true';
+
+      img.addEventListener('click', () => {
+        const title = img.dataset.projectTitle;
+        if (!title) return;
+        
+        const modalId = `modal-${title.toLowerCase().replace(/\s+/g, '-')}`;
+        const modal = document.getElementById(modalId) as HTMLDialogElement | null;
+        
+        if (modal) {
+          modal.showModal();
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    const modals = document.querySelectorAll<HTMLDialogElement>('.project-modal');
+    modals.forEach(modal => {
+      // Avoid multiple listeners
+      if (modal.dataset.modalSetup) return;
+      modal.dataset.modalSetup = 'true';
+
+      const closeBtn = modal.querySelector('.close-modal-btn');
+      
+      const closeModal = () => {
+        modal.close();
+        document.body.style.overflow = 'auto';
+      };
+
+      closeBtn?.addEventListener('click', closeModal);
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      modal.addEventListener('cancel', () => {
+        document.body.style.overflow = 'auto';
+      });
+    });
+  }
+
+  setupModals();
+  document.addEventListener('astro:after-swap', setupModals);
+</script>
+
+<style>
+  .project-modal::backdrop {
+    /* Efecto de "píxel" mediante una rejilla de micro-puntos */
+    background-image: radial-gradient(rgba(0, 0, 0, 0.5) 1px, transparent 1px);
+    background-size: 4px 4px; /* Tamaño del "píxel" */
+    
+    /* Desenfoque y color base transparente */
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.2);
+    
+    animation: backdrop-fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes backdrop-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Para navegadores que no soportan ::backdrop (poco común hoy día) */
+  .project-modal {
+    background-color: transparent;
+  }
+</style>
