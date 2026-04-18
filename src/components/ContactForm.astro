@@ -1,0 +1,189 @@
+---
+---
+
+<form class="flex flex-col gap-4" id="contact-form">
+  <!-- Campo Honeypot (Oculto para humanos) -->
+  <input type="text" name="_honey" style="display:none" tab-index="-1" autocomplete="off" />
+
+  <div class="space-y-2">
+    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Nombre</label>
+    <input 
+      name="nombre"
+      required
+      aria-describedby="error-nombre"
+      class="w-full bg-brand-surface-container/50 border border-brand-outline-variant/50 rounded-xl px-4 py-3 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 text-brand-on-surface placeholder:text-brand-on-surface-variant/50 text-sm transition-all outline-none shadow-sm" 
+      placeholder="Tu nombre" 
+      type="text"
+    />
+    <span id="error-nombre" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
+  </div>
+  <div class="space-y-2">
+    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Email</label>
+    <input 
+      name="email"
+      required
+      aria-describedby="error-email"
+      class="w-full bg-brand-surface-container/50 border border-brand-outline-variant/50 rounded-xl px-4 py-3 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 text-brand-on-surface placeholder:text-brand-on-surface-variant/50 text-sm transition-all outline-none shadow-sm" 
+      placeholder="tu@email.com" 
+      type="email"
+    />
+    <span id="error-email" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
+  </div>
+  <div class="space-y-2">
+    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Asunto</label>
+    <input 
+      name="asunto"
+      required
+      aria-describedby="error-asunto"
+      class="w-full bg-brand-surface-container/50 border border-brand-outline-variant/50 rounded-xl px-4 py-3 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 text-brand-on-surface placeholder:text-brand-on-surface-variant/50 text-sm transition-all outline-none shadow-sm" 
+      placeholder="¿De qué trata tu mensaje?" 
+      type="text"
+    />
+    <span id="error-asunto" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
+  </div>
+  <div class="space-y-2">
+    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Mensaje</label>
+    <textarea 
+      name="mensaje"
+      required
+      aria-describedby="error-mensaje"
+      class="w-full bg-brand-surface-container/50 border border-brand-outline-variant/50 rounded-xl px-4 py-3 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 text-brand-on-surface placeholder:text-brand-on-surface-variant/50 text-sm transition-all outline-none shadow-sm resize-none" 
+      placeholder="¿En qué puedo ayudarte?" 
+      rows="4"
+    ></textarea>
+    <span id="error-mensaje" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
+  </div>
+  
+  <div id="form-status" class="hidden text-sm font-body px-4 py-2 rounded-lg" role="status"></div>
+
+  <button id="submit-btn" class="ion-drive-button cursor-pointer w-full py-4 rounded-xl text-black font-bold font-label uppercase tracking-widest text-xs mt-2 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
+    Enviar Mensaje
+  </button>
+</form>
+
+<script>
+  import { ContactSchema } from '@/schemas/contact';
+
+  function setupContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const statusDiv = document.getElementById('form-status');
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+    if (!form || !statusDiv || !submitBtn) return;
+
+
+    function clearErrors() {
+      form.querySelectorAll('[id^="error-"]').forEach(el => {
+        el.classList.add('hidden');
+        el.textContent = '';
+      });
+      form.querySelectorAll('input, textarea').forEach(el => {
+        el.classList.remove('border-error');
+      });
+    }
+
+    function showError(field: string, message: string) {
+      const errorEl = document.getElementById(`error-${field}`);
+      const inputEl = form.querySelector(`[name="${field}"]`);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
+      if (inputEl) {
+        inputEl.classList.add('border-error');
+      }
+    }
+
+    // Limpiar error al escribir
+    form.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('input', () => {
+        const name = input.getAttribute('name');
+        if (name) {
+          const errorEl = document.getElementById(`error-${name}`);
+          if (errorEl) {
+            errorEl.classList.add('hidden');
+            input.classList.remove('border-error');
+          }
+        }
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      // Validación Frontend con Zod
+      const validation = ContactSchema.safeParse(data);
+      
+      if (!validation.success) {
+        const fieldErrors: Record<string, string[]> = {};
+        validation.error.issues.forEach(issue => {
+          const path = issue.path[0]?.toString() || 'general';
+          if (!fieldErrors[path]) fieldErrors[path] = [];
+          fieldErrors[path].push(issue.message);
+        });
+
+        Object.entries(fieldErrors).forEach(([field, messages]) => {
+          if (messages && messages.length > 0) {
+            showError(field, messages[0]);
+          }
+        });
+        return; // Detener envío si hay errores de validación
+      }
+      
+      // Estado de carga y bloqueo
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50', 'cursor-wait');
+      const originalBtnText = submitBtn.innerText;
+      submitBtn.innerText = 'Enviando...';
+      
+      statusDiv.classList.remove('hidden', 'bg-error/20', 'text-error', 'bg-success/20', 'text-success');
+      statusDiv.classList.add('bg-brand-primary/10', 'text-brand-primary');
+      statusDiv.innerText = 'Procesando mensaje...';
+
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = (await response.json()) as { message?: string, errors?: Record<string, string[]> };
+
+        if (response.ok) {
+          statusDiv.classList.replace('text-brand-primary', 'text-success');
+          statusDiv.classList.replace('bg-brand-primary/10', 'bg-success/20');
+          statusDiv.innerText = result.message || '¡Mensaje enviado con éxito!';
+          form.reset();
+        } else {
+          statusDiv.classList.replace('text-brand-primary', 'text-error');
+          statusDiv.classList.replace('bg-brand-primary/10', 'bg-error/20');
+          statusDiv.innerText = result.errors 
+            ? Object.values(result.errors).flat().join(', ') 
+            : (result.message || 'Error al enviar el mensaje');
+        }
+      } catch (error) {
+        statusDiv.classList.replace('text-brand-primary', 'text-error');
+        statusDiv.classList.replace('bg-brand-primary/10', 'bg-error/20');
+        statusDiv.innerText = 'Error de conexión. Inténtalo de nuevo.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-wait');
+        submitBtn.innerText = originalBtnText;
+        
+        // Ocultar mensaje después de 3 segundos si fue exitoso
+        if (statusDiv.classList.contains('text-success')) {
+          setTimeout(() => {
+            statusDiv.classList.add('hidden');
+          }, 3000);
+        }
+      }
+    });
+  }
+
+  setupContactForm();
+  document.addEventListener('astro:after-swap', setupContactForm);
+</script>
