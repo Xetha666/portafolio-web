@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bryansantillan.dev/sitemap-index.xml
