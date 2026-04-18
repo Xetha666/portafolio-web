@@ -1,0 +1,147 @@
+---
+import AstroDB from "@/components/icons/AstroDB.astro";
+import AstroIcon from "@/components/icons/AstroIcon.astro";
+import CloudflareIcon from "@/components/icons/Cloudflare.astro";
+import DaisyuiIcon from "@/components/icons/Daisyui.astro";
+import GithubIcon from "@/components/icons/Github.astro";
+import GithubActionsIcon from "@/components/icons/GithubActions.astro";
+import JavaScriptIcon from "@/components/icons/JavaScript.astro";
+import ReactIcon from "@/components/icons/React.astro";
+import TailwindIcon from "@/components/icons/Tailwind.astro";
+import TypeScriptIcon from "@/components/icons/TypeScript.astro";
+import UnknownIcon from "@/components/icons/Unknown.astro";
+import VercelIcon from "@/components/icons/VercelIcon.astro";
+import ProjectModal from "@/components/ProjectModal.astro";
+import type { Tag } from "@/types/project";
+import { Image } from 'astro:assets';
+import LockIcon from "public/svg/Lock.svg";
+import PublicIcon from "public/svg/World.svg";
+
+const { title, description, image, tags, demoUrl, repoUrl, isPrivate = false, class: className } = Astro.props;
+
+// Determine if we should use the fallback (if it's the generic GitHub OG image)
+const isGithubFallback = typeof image === 'string' && image.includes('opengraph.githubassets.com');
+
+const iconMap = {
+  Astro: AstroIcon,
+  AstroDB: AstroDB,
+  React: ReactIcon,
+  Tailwind: TailwindIcon,
+  Daisyui: DaisyuiIcon,
+  JavaScript: JavaScriptIcon,
+  TypeScript: TypeScriptIcon,
+  GithubActions: GithubActionsIcon,
+  Cloudflare: CloudflareIcon,
+  Vercel: VercelIcon,
+  Unknown: UnknownIcon,
+};
+---
+
+<article 
+  class:list={["glass-panel rounded-3xl overflow-hidden ghost-border flex flex-col group card-project transition-all duration-500", className]}
+  data-techs={tags?.map((t: Tag) => t.icon).join(',')}
+>
+  <div class="relative h-64 overflow-hidden bg-brand-surface-container-highest flex items-center justify-center">
+    {isGithubFallback ? (
+      <div class="w-full h-full flex flex-col items-center justify-center gap-4 bg-linear-to-br from-brand-background to-brand-surface-container-highest text-brand-on-surface-variant/50">
+        <GithubIcon class="size-20" />
+        <span class="font-label text-xs uppercase tracking-widest opacity-30">GitHub Repository</span>
+      </div>
+    ) : (
+      <Image 
+        src={image as any}
+        alt={`Miniatura del proyecto ${title}`} 
+        class="project-image w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-zoom-in"
+        loading="lazy"
+        data-project-title={title}
+      />
+    )}
+    <div class="absolute inset-0 bg-linear-to-t from-brand-surface-container-highest to-transparent opacity-60 hidden dark:block pointer-events-none"></div>
+  </div>
+  
+  <div class="p-8 flex flex-col gap-4">
+    <div class="flex items-start justify-between gap-4">
+      <ul class="flex flex-wrap gap-2 flex-1 list-none" aria-label="Tecnologías utilizadas">
+        {tags?.map((tag: Tag) => {
+          const Icon = iconMap[tag.icon as keyof typeof iconMap];
+          return (
+            <li class="md:cursor-help">
+              <span 
+                class="flex items-center justify-center p-1.5 rounded-md transition scale-95 hover:scale-105 hover:shadow-lg bg-brand-surface-container-highest text-brand-on-surface-variant"
+                title={tag.name}
+              >
+                {Icon && <Icon class="size-5 object-contain" />}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <span class:list={[
+        "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md border select-none shrink-0",
+        isPrivate 
+          ? "bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-500/30 shadow-private" 
+          : "bg-brand-primary/10 text-brand-primary border-brand-primary/30 shadow-public"
+      ]}>
+        <span class="flex items-center gap-1.5">
+          {isPrivate ? <LockIcon class="size-4"/> : <PublicIcon class="size-4"/>}
+          {isPrivate ? 'Privado' : 'Público'}
+        </span>
+      </span>
+    </div>
+    
+    <h3 class="font-headline text-2xl font-bold">{title}</h3>
+    
+    <p class="font-body text-sm text-brand-on-surface-variant leading-relaxed">
+      {description}
+    </p>
+    
+    <footer class="flex items-center justify-between mt-4">
+      <a 
+        class:list={[
+          "font-label text-xs font-bold uppercase tracking-widest flex items-center gap-1 scale-95 hover:scale-105 transition-transform focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4",
+          isPrivate ? "text-amber-600 dark:text-amber-500 focus-visible:outline-amber-600 dark:focus-visible:outline-amber-500" : "text-brand-primary focus-visible:outline-brand-primary"
+        ]}
+        href={isPrivate ? "#contact" : demoUrl}
+        target={isPrivate ? "_self" : "_blank"}
+        rel={isPrivate ? "" : "noopener noreferrer"}
+      >
+        {isPrivate ? "Solicitar Acceso" : "Ver Demo"}
+        <span class="material-symbols-outlined text-sm" aria-hidden="true">
+          {isPrivate ? 'contact_support' : 'open_in_new'}
+        </span>
+      </a>
+      
+      {!isPrivate && (
+        <a 
+          class="text-brand-on-surface-variant hover:text-brand-on-surface transition-colors focus-visible:outline-dashed focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-on-surface" 
+          href={repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Ver código fuente de ${title} en GitHub`}
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">
+            rebase_edit
+          </span>
+        </a>
+      )}
+    </footer>
+  </div>
+
+  {!isGithubFallback && (
+    <ProjectModal 
+      id={`modal-${title.toLowerCase().replace(/\s+/g, '-')}`}
+      title={title}
+      image={image}
+    />
+  )}
+</article>
+
+<style>
+  .shadow-private{
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.05);
+  }
+  .shadow-public{
+    box-shadow: 0 0 15px rgba(0, 106, 110, 0.05);
+  }
+</style>
