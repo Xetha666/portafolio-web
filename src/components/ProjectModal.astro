@@ -26,6 +26,7 @@ const { id, title, image } = Astro.props;
       src={image as any} 
       alt={`Vista completa de ${title}`} 
       class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl animate-fade-in animate-scale-up"
+      loading="lazy"
     />
   </div>
 </dialog>
