@@ -57,9 +57,10 @@ const getIconForTech = (tech: string): IconName | null => {
   return ICON_MAPPING[key] || null;
 };
 
-export const fetchGithubRepos = async (): Promise<Project[]> => {
+export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
+  const finalToken = token || GITHUB_TOKEN;
   try {
-    const url = GITHUB_TOKEN 
+    const url = finalToken 
       ? `https://api.github.com/user/repos?sort=updated&per_page=20&visibility=all` 
       : `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=20`;
 
@@ -68,8 +69,8 @@ export const fetchGithubRepos = async (): Promise<Project[]> => {
       'User-Agent': 'Astro-Portfolio-Client', // GitHub requiere un User-Agent identificativo
     };
 
-    if (GITHUB_TOKEN) {
-      headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+    if (finalToken) {
+      headers['Authorization'] = `Bearer ${finalToken}`;
     }
 
     const response = await fetch(url, { headers });
