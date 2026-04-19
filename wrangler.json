@@ -1,24 +1,17 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "portafolio-web",
-  "main": "@astrojs/cloudflare/entrypoints/server",
-  "compatibility_date": "2026-04-19",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "vars": {
-    "NODE_VERSION": "22.12.0"
-  },
-  "kv_namespaces": [
-    {
-      "binding": "RATELIMIT_KV",
-      "id": "ab7bc024672d4903bfa4fc342b3f9ff5"
-    }
-  ],
-  "assets": {
-    "directory": "dist/client"
-  },
-  "observability": {
-    "enabled": true
-  }
+	"name": "portafolio-web",
+	"compatibility_date": "2026-03-12",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": "dist",
+	"vars": {
+		"NODE_VERSION": "22.12.0"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "RATELIMIT_KV",
+			"id": "ab7bc024672d4903bfa4fc342b3f9ff5"
+		}
+	]
 }
