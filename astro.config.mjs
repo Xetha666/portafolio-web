@@ -8,6 +8,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://bryansantillan.dev',
   adapter: cloudflare({
+    mode: 'advanced',
     platformProxy: {
       enabled: true
     }
