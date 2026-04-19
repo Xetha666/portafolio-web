@@ -12,11 +12,7 @@ export default defineConfig({
   }),
   output: 'server',
 
-  session: {
-    driver: {
-      entrypoint: 'unstorage/drivers/null'
-    }
-  },
+
 
   vite: {
     plugins: [tailwindcss()],
