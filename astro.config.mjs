@@ -7,11 +7,9 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://bryansantillan.dev',
-  adapter: cloudflare(
-    {
-      imageService: 'passthrough',
-    }
-  ),
+  adapter: cloudflare({
+    imageService: 'passthrough',
+  }),
   output: 'server',
 
   session: {
