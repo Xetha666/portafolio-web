@@ -49,13 +49,13 @@ const iconMap = {
 <div class="w-full">
   <div class="flex flex-col gap-8">
     <!-- Title always on top -->
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 timeline-view animate-slide-in-left animate-range-[entry_5%_contain_25%]">
       <h2 class="font-headline text-3xl font-bold mb-2">Proyectos Seleccionados</h2>
       <p class="font-body text-brand-on-surface-variant">Explora mis trabajos más recientes.</p>
     </div>
 
     <!-- Filters centered below title -->
-    <div class="flex flex-col items-center gap-4">
+    <div class="flex flex-col items-center gap-4 timeline-view animate-fade-in animate-range-[entry_5%_contain_30%]">
       <span class="font-label text-xs font-bold uppercase tracking-widest text-brand-on-surface-variant flex items-center gap-2">
         <span class="size-1.5 rounded-full bg-brand-primary animate-pulse"></span>
         Filtrar por tecnología
@@ -82,11 +82,11 @@ const iconMap = {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 projects-grid">
-      {projects.map(project => {
+      {projects.map((project, i) => {
         // Resolve the image: Look in local assets first (matching repo name), then fallback to GitHub OG image
         const localImage = projectImages[`/src/assets/projects/${project.repoName}.webp`]?.default;
         
-        return <CardProject {...project} image={localImage || project.image} />
+        return <CardProject {...project} image={localImage || project.image} class={`timeline-view animate-zoom-in animate-range-[entry_5%_contain_30%]`} />
       })}
     </div>
   </div>
