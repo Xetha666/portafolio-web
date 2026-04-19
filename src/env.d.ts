@@ -21,6 +21,7 @@ declare namespace App {
         RATELIMIT_KV: KVNamespace;
         RESEND_API_KEY?: string;
         DESTINATION_EMAIL?: string;
+        GITHUB_TOKEN?: string;
       };
     };
   }
