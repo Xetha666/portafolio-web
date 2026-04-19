@@ -6,6 +6,15 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "vars": {
+    "NODE_VERSION": "22.12.0"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "RATELIMIT_KV",
+      "id": "ab7bc024672d4903bfa4fc342b3f9ff5"
+    }
+  ],
   "assets": {
     "directory": "dist/client"
   },
