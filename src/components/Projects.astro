@@ -14,7 +14,9 @@ import UnknownIcon from "@/components/icons/Unknown.astro";
 import VercelIcon from "@/components/icons/VercelIcon.astro";
 import { fetchGithubRepos } from "@/services/github";
 
-const projects = await fetchGithubRepos();
+const runtime = Astro.locals.runtime;
+const token = runtime?.env?.GITHUB_TOKEN;
+const projects = await fetchGithubRepos(token);
 
 // Load all optimized images from the projects folder
 const projectImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/projects/*.{jpeg,jpg,png,gif,webp}', { eager: true });
