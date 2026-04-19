@@ -6,8 +6,9 @@
   <input type="text" name="_honey" style="display:none" tab-index="-1" autocomplete="off" />
 
   <div class="space-y-2">
-    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Nombre</label>
+    <label for="nombre" class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Nombre</label>
     <input 
+      id="nombre"
       name="nombre"
       required
       aria-describedby="error-nombre"
@@ -18,8 +19,9 @@
     <span id="error-nombre" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
   </div>
   <div class="space-y-2">
-    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Email</label>
+    <label for="email" class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Email</label>
     <input 
+      id="email"
       name="email"
       required
       aria-describedby="error-email"
@@ -30,8 +32,9 @@
     <span id="error-email" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
   </div>
   <div class="space-y-2">
-    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Asunto</label>
+    <label for="asunto" class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Asunto</label>
     <input 
+      id="asunto"
       name="asunto"
       required
       aria-describedby="error-asunto"
@@ -42,8 +45,9 @@
     <span id="error-asunto" class="text-small text-error font-medium ml-1 hidden" role="alert"></span>
   </div>
   <div class="space-y-2">
-    <label class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Mensaje</label>
+    <label for="mensaje" class="font-label text-xs uppercase tracking-widest ml-1 text-brand-on-surface-variant">Mensaje</label>
     <textarea 
+      id="mensaje"
       name="mensaje"
       required
       aria-describedby="error-mensaje"
