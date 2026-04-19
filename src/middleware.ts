@@ -1,6 +1,13 @@
 import { defineMiddleware } from "astro:middleware";
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  const url = new URL(context.request.url);
+  
+  // Redirección profesional: de .pages.dev a dominio principal
+  if (url.hostname.includes("pages.dev")) {
+    return context.redirect(`https://bryansantillan.dev${url.pathname}${url.search}`, 301);
+  }
+
   // Solo aplicar rate limit a las rutas de la API
   if (context.url.pathname.startsWith("/api/")) {
     const runtime = context.locals.runtime;
