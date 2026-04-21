@@ -2,8 +2,8 @@
 import logoDark from "@/assets/logo-dark.webp";
 import logoLight from "@/assets/logo-light.webp";
 import Background from "@/components/Background.astro";
-import "@/styles/global.css";
 import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import "@/styles/global.css";
 
 interface Props {
 	title?: string;
@@ -30,36 +30,40 @@ const {
 		<link rel="icon" type="image/webp" href={logoDark.src} media="(prefers-color-scheme: dark)" />
 		<meta name="generator" content={Astro.generator} />
 		
-		<link rel="canonical" href={Astro.url} />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
 
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={Astro.url} />
+		<meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
 		<meta property="og:site_name" content={t('site.og_site_name')} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content="/og-image.png" />
+		<meta property="og:image" content={new URL('/og-image.png', Astro.site)} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:alt" content={title} />
 
 		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content={Astro.url} />
-		<meta property="twitter:title" content={title} />
-		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content="/og-image.png" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={new URL(Astro.url.pathname, Astro.site)} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={new URL('/og-image.png', Astro.site)} />
 
 		<!-- Discord / Slack Theme Color -->
 		<meta name="theme-color" content="#006a6e" />
 
 		<!-- SEO Final Polish -->
 		<meta name="robots" content="index, follow" />
-		<meta name="author" content="Bryan" />
+		<meta name="author" content="Bryan Santillan" />
 
 		<!-- JSON-LD Structured Data -->
 		<script type="application/ld+json" is:inline set:html={JSON.stringify({
 			"@context": "https://schema.org",
 			"@type": "Person",
 			"name": "Bryan",
-			"url": Astro.url,
+			"url": new URL(Astro.url.pathname, Astro.site),
 			"jobTitle": "Fullstack Developer",
 			"description": description,
 			"sameAs": [
