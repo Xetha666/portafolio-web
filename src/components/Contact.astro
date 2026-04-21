@@ -6,6 +6,10 @@ import GithubIcon from "@/components/icons/Github.astro";
 import WhatsAppIcon from "@/components/icons/WhatsApp.astro";
 import DiscordIcon from "@/components/icons/Discord.astro";
 import ContactForm from "@/components/ContactForm.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="mb-16 scroll-mt-4 md:scroll-mt-24 lg:scroll-mt-28" id="contact">
@@ -14,10 +18,9 @@ import ContactForm from "@/components/ContactForm.astro";
     <div class="absolute bottom-0 left-0 w-64 h-64 bg-brand-primary/10 blur-huge -z-10"></div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
       <div class="flex flex-col gap-6 timeline-view animate-slide-in-left animate-range-[entry_5%_contain_30%]">
-        <h2 class="font-headline select-none text-4xl font-bold">Trabajemos juntos</h2>
+        <h2 class="font-headline select-none text-4xl font-bold">{t('contact.title')}</h2>
         <p class="font-body select-none text-brand-on-surface-variant text-lg">
-          ¿Tienes un proyecto en mente o simplemente quieres saludar? Mi buzón
-          siempre está abierto.
+          {t('contact.subtitle')}
         </p>
         <div class="mt-8 space-y-4">
           <div class="select-none flex items-center gap-4">
@@ -25,9 +28,9 @@ import ContactForm from "@/components/ContactForm.astro";
               <Email class="size-6" />
             </div>
             <div>
-              <div class="font-label text-small uppercase text-brand-on-surface-variant">Email</div>
-              <button id="copy-email" class="font-body text-sm text-left hover:text-brand-primary transition-colors cursor-pointer flex items-center gap-2 group" title="Haga clic para copiar el correo electrónico">
-                <span id="email-display-text">bryandev... [Click para copiar]</span>
+              <div class="font-label text-small uppercase text-brand-on-surface-variant">{t('contact.email_label')}</div>
+            <button id="copy-email" class="font-body text-sm text-left hover:text-brand-primary transition-colors cursor-pointer flex items-center gap-2 group" title={t('contact.copy_email_title')} data-copied-text={t('contact.email_copied')}>
+                <span id="email-display-text">{t('contact.email_placeholder')}</span>
                 <Copy class="size-6 opacity-0 group-hover:opacity-100 transition-opacity"/>
               </button>
             </div>
@@ -37,19 +40,19 @@ import ContactForm from "@/components/ContactForm.astro";
               <Location class="size-6" />
             </div>
             <div>
-              <div class="font-label text-small uppercase text-brand-on-surface-variant">Ubicación</div>
-              <div class="font-body text-sm">Remoto / Lima, PE</div>
+              <div class="font-label text-small uppercase text-brand-on-surface-variant">{t('contact.location_label')}</div>
+              <div class="font-body text-sm">{t('contact.location')}</div>
             </div>
           </div>
         </div>
         <div class="flex gap-3 mt-8">
-          <a class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-brand-on-surface dark:text-brand-on-surface hover:scale-110 transition-all duration-300 cursor-pointer border-none" href="https://github.com/Xetha666" target="_blank" rel="noopener noreferrer" aria-label="Ver perfil de GitHub" title="GitHub">
+          <a class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-brand-on-surface dark:text-brand-on-surface hover:scale-110 transition-all duration-300 cursor-pointer border-none" href="https://github.com/Xetha666" target="_blank" rel="noopener noreferrer" aria-label={t('contact.github_aria')} title="GitHub">
             <GithubIcon class="size-5" />
           </a>
-          <button id="open-whatsapp" class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-success hover:scale-110 transition-all duration-300 cursor-pointer border-none" aria-label="Abrir chat en WhatsApp" title="WhatsApp">
+          <button id="open-whatsapp" class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-success hover:scale-110 transition-all duration-300 cursor-pointer border-none" aria-label={t('contact.whatsapp_aria')} title="WhatsApp">
             <WhatsAppIcon class="size-5" />
           </button>
-          <button id="open-discord" class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-brand-discord hover:scale-110 transition-all duration-300 border-none cursor-pointer" aria-label="Contactar por Discord" title="Discord">
+          <button id="open-discord" class="w-10 h-10 rounded-full glass-panel ghost-border flex items-center justify-center text-brand-discord hover:scale-110 transition-all duration-300 border-none cursor-pointer" aria-label={t('contact.discord_aria')} title="Discord">
             <DiscordIcon class="size-5" />
           </button>
         </div>
@@ -69,6 +72,11 @@ import ContactForm from "@/components/ContactForm.astro";
     const encodedEmail = "YnJ5YW5kZXY3ODk2QGdtYWlsLmNvbQ==";
 
     if (copyEmailBtn && emailText) {
+      if (copyEmailBtn.dataset.setup) return;
+      copyEmailBtn.dataset.setup = "true";
+      
+      const copiedText = copyEmailBtn.dataset.copiedText || "Copiado";
+
       copyEmailBtn.addEventListener("click", () => {
         const email = atob(encodedEmail);
 
@@ -76,7 +84,7 @@ import ContactForm from "@/components/ContactForm.astro";
           .writeText(email)
           .then(() => {
             const originalText = emailText.innerText;
-            emailText.innerText = "¡Email copiado!";
+            emailText.innerText = copiedText;
             emailText.classList.add("text-brand-primary", "font-bold");
 
             setTimeout(() => {
@@ -103,23 +111,23 @@ import ContactForm from "@/components/ContactForm.astro";
       );
     };
 
-    const openWaBtn = document.getElementById("open-whatsapp");
-    if (openWaBtn && !(openWaBtn as any)._waSetup) {
+    const openWaBtn = document.getElementById("open-whatsapp") as HTMLButtonElement | null;
+    if (openWaBtn && !openWaBtn.dataset.setup) {
       openWaBtn.addEventListener("click", openHandler);
-      (openWaBtn as any)._waSetup = true;
+      openWaBtn.dataset.setup = "true";
     }
   }
 
   function setupDiscord() {
     const encodedId = "NDc1Nzg5MDU3MjA5NjYzNDg5";
 
-    const openDiscordBtn = document.getElementById("open-discord");
-    if (openDiscordBtn && !(openDiscordBtn as any)._discordSetup) {
+    const openDiscordBtn = document.getElementById("open-discord") as HTMLButtonElement | null;
+    if (openDiscordBtn && !openDiscordBtn.dataset.setup) {
       openDiscordBtn.addEventListener("click", () => {
         const id = atob(encodedId);
         window.open(`https://discord.com/users/${id}`, "_blank");
       });
-      (openDiscordBtn as any)._discordSetup = true;
+      openDiscordBtn.dataset.setup = "true";
     }
   }
 

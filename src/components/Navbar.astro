@@ -4,12 +4,18 @@ import { Options } from "@/types/menu";
 import { Image } from "astro:assets";
 import logoLight from "@/assets/logo-light.webp";
 import logoDark from "@/assets/logo-dark.webp";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import SpainFlag from "@/components/icons/SpainFlag.astro";
+import AmericaFlag from "@/components/icons/AmericaFlag.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
-<nav class="flex items-center justify-between px-6 py-3 rounded-full mt-4 mx-auto w-11/12 max-w-4xl glass-panel border border-brand-outline-variant/30 nav-shadow md:sticky md:top-4 z-50 animate-slide-in-top animate-duration-700">
-  <a href="/" class="transition-transform duration-300 active:scale-95">
-    <Image src={logoLight} alt="bryan.dev Logo" class="h-8 w-auto block dark:hidden" loading="lazy" />
-    <Image src={logoDark} alt="bryan.dev Logo" class="h-8 w-auto hidden dark:block" loading="lazy" />
+<nav class="flex items-center justify-between px-6 py-3 rounded-full mt-4 mx-auto w-11/12 max-w-5xl glass-panel border border-brand-outline-variant/30 nav-shadow sticky top-4 z-50 animate-slide-in-top animate-duration-700">
+  <a href={lang === 'es' ? '/' : `/${lang}/`} class="transition-transform duration-300 active:scale-95">
+    <Image src={logoLight} alt="bryan.dev Logo" class="h-8 w-auto block dark:hidden" loading="eager" fetchpriority="high" />
+    <Image src={logoDark} alt="bryan.dev Logo" class="h-8 w-auto hidden dark:block" loading="eager" fetchpriority="high" />
   </a>
 
   <!-- Desktop Menu -->
@@ -25,21 +31,66 @@ import logoDark from "@/assets/logo-dark.webp";
             ]}
             data-nav-link={option.href.replace("#", "")}
           >
-            <span>{option.name}</span>
+            <span>{t(option.key as any)}</span>
           </a>
         );
       })
     }
   </div>
 
-  <button aria-label="Cambiar tema">
-    <ThemeController/>
-  </button>
+  <div class="flex items-center gap-2">
+    <!-- Language Selector -->
+    <div class="relative" id="lang-picker-container">
+      <button 
+        id="lang-button"
+        aria-label={t('common.change_lang')}
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-brand-primary/10 transition-all duration-300 text-brand-on-surface-variant active:scale-95 group/langbtn cursor-pointer"
+      >
+        <div class="size-7 flex items-center justify-center shrink-0">
+          {lang === 'es' ? <SpainFlag class="size-full" /> : <AmericaFlag class="size-full" />}
+        </div>
+        <span class="font-label text-xs font-bold uppercase tracking-widest">{lang}</span>
+      </button>
+      <div 
+        id="lang-dropdown"
+        class="absolute right-0 top-full mt-2 opacity-0 pointer-events-none translate-y-2 transition-all duration-300 z-60"
+      >
+        <div class="glass-panel border border-brand-outline-variant/20 rounded-2xl p-2 min-w-36 shadow-xl overflow-hidden backdrop-blur-3xl">
+          <a
+            href="/"
+            class:list={[
+              "flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-colors",
+              lang === 'es' ? "bg-brand-primary/20 text-brand-primary font-bold" : "text-brand-on-surface-variant hover:bg-brand-primary/10 hover:text-brand-primary"
+            ]}
+          >
+            <SpainFlag class="size-5 shrink-0" /> Español
+          </a>
+          <a 
+            href="/en/"
+            class:list={[
+              "flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-colors mt-1",
+              lang === 'en' ? "bg-brand-primary/20 text-brand-primary font-bold" : "text-brand-on-surface-variant hover:bg-brand-primary/10 hover:text-brand-primary"
+            ]}
+          >
+            <AmericaFlag class="size-5 shrink-0" /> English
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-px h-4 bg-accent-content dark:bg-accent-content mx-1"></div>
+
+    <button aria-label={t('common.change_theme')}>
+      <ThemeController/>
+    </button>
+  </div>
 </nav>
 
 <script>
   function setupNavbar() {
-    const navLinks = document.querySelectorAll("nav.md\\:sticky [data-nav-link]");
+    const navLinks = document.querySelectorAll("nav.sticky [data-nav-link]");
     const sections = document.querySelectorAll("section[id]");
 
     const activeClasses = ["text-brand-primary", "bg-brand-primary/10", "dark:text-brand-primary", "dark:bg-brand-primary/10"];
@@ -72,8 +123,62 @@ import logoDark from "@/assets/logo-dark.webp";
     sections.forEach((section) => observer.observe(section));
   }
 
+  function setupLanguagePicker() {
+    const btn = document.getElementById('lang-button');
+    const dropdown = document.getElementById('lang-dropdown');
+    
+    if (!btn || !dropdown) return;
+
+    const toggle = (forceClose = false) => {
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      const shouldOpen = forceClose ? false : !isExpanded;
+      
+      btn.setAttribute('aria-expanded', shouldOpen.toString());
+      
+      if (shouldOpen) {
+        dropdown.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+        dropdown.classList.add('opacity-100', 'translate-y-0');
+      } else {
+        dropdown.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+        dropdown.classList.remove('opacity-100', 'translate-y-0');
+      }
+    };
+
+    // Use a single click handler for the button
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      toggle();
+    };
+
+    // Close on click outside, but allow clicks inside dropdown to bubble for navigation
+    document.onclick = (e) => {
+      const target = e.target as Node;
+      if (!btn.contains(target) && !dropdown.contains(target)) {
+        toggle(true);
+      }
+    };
+
+    // Ensure links close the dropdown after being clicked (for mobile UX)
+    dropdown.querySelectorAll('a').forEach(link => {
+      link.onclick = () => {
+        // Delay closing slightly to allow navigation to start
+        setTimeout(() => toggle(true), 100);
+      };
+    });
+
+    // Close on escape key
+    document.onkeydown = (e) => {
+      if (e.key === 'Escape') toggle(true);
+    };
+  }
+
   setupNavbar();
-  document.addEventListener('astro:after-swap', setupNavbar);
+  setupLanguagePicker();
+  
+  document.addEventListener('astro:after-swap', () => {
+    setupNavbar();
+    setupLanguagePicker();
+  });
 </script>
 
 <style>

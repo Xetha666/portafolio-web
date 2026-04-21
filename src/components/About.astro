@@ -1,40 +1,42 @@
 ---
 import { skillCategories } from "@/types/skills";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="mb-32 scroll-mt-12 md:scroll-mt-24 lg:scroll-mt-32" id="about">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
     <div class="md:col-span-7 flex flex-col gap-8">
-      <h2 class="font-headline select-none text-4xl font-bold timeline-view animate-slide-in-left animate-range-[entry_5%_contain_25%]">Sobre Mí</h2>
+      <h2 class="font-headline select-none text-4xl font-bold timeline-view animate-slide-in-left animate-range-[entry_5%_contain_25%]">{t('about.title')}</h2>
       <div class="space-y-4 font-body select-none text-brand-on-surface-variant leading-relaxed text-lg">
         <p>
-          Como desarrollador web, me apasiona la intersección entre el diseño visual sofisticado y el rendimiento técnico riguroso. Llevo +1 año explorando el ecosistema del desarrollo web para crear soluciones que no solo funcionen, sino que inspiren.
+          {t('about.p1')}
         </p>
-        <p>
-          Mi enfoque se centra en la arquitectura de componentes limpia y el uso estratégico de herramientas modernas como <span class="text-tech-react">React</span>, <span class="text-tech-tailwind">Tailwind CSS</span> y <span class="text-tech-astro">Astro</span> para entregar productos web rápidos y accesibles.
-        </p>s
+        <p set:html={t('about.p2')} />
       </div>
       <div class="grid grid-cols-2 select-none gap-4 mt-4 timeline-view animate-fade-in animate-range-[entry_10%_contain_40%]">
         <div class="p-6 rounded-2xl glass-panel ghost-border">
           <div class="text-brand-primary font-headline text-3xl font-bold mb-1">3+</div>
-          <div class="font-label text-xs uppercase tracking-widest text-brand-on-surface-variant">Proyectos Completados</div>
+          <div class="font-label text-xs uppercase tracking-widest text-brand-on-surface-variant">{t('about.stats.projects')}</div>
         </div>
         <div class="p-6 rounded-2xl glass-panel ghost-border">
           <div class="text-brand-secondary font-headline text-3xl font-bold mb-1">6+</div>
-          <div class="font-label text-xs uppercase tracking-widest text-brand-on-surface-variant">Meses de Experiencia</div>
+          <div class="font-label text-xs uppercase tracking-widest text-brand-on-surface-variant">{t('about.stats.experience')}</div>
         </div>
       </div>
     </div>
     
     <div class="md:col-span-5 flex flex-col gap-6 timeline-view animate-slide-in-right animate-range-[entry_5%_contain_30%]">
       <div class="glass-panel select-none rounded-[2.5rem] p-8 ghost-border h-full">
-        <h4 class="font-label text-sm uppercase tracking-widest text-brand-primary mb-8 text-center italic">Stack Tecnológico y Herramientas</h4>
+        <h4 class="font-label text-sm uppercase tracking-widest text-brand-primary mb-8 text-center italic">{t('about.tech_stack')}</h4>
         
         <div class="space-y-8">
           {skillCategories.map((category) => (
             <div class="space-y-4">
               <h5 class="font-label text-xs uppercase tracking-wide text-brand-on-surface-variant/60 font-semibold">
-                {category.title}
+                {lang === 'es' ? category.title : (category as any).titleEn || category.title}
               </h5>
               <div class="flex flex-wrap gap-2">
                 {category.items.map(({ name, Icon, learning }) => (
@@ -47,7 +49,7 @@ import { skillCategories } from "@/types/skills";
                     </span>
                     {learning && (
                       <span class="text-small bg-brand-secondary/10 text-brand-secondary px-2 py-0.5 rounded-full font-bold border border-brand-secondary/20">
-                        Aprendiendo
+                        {t('about.learning')}
                       </span>
                     )}
                   </div>

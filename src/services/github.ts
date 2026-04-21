@@ -102,7 +102,7 @@ export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
               });
             } else {
               tags.push({
-                name: `No he reconocido la tecnología "${topic}"`,
+                name: 'projects.tech_unknown',
                 type: 'tertiary',
                 icon: 'Unknown'
               });
@@ -111,7 +111,7 @@ export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
         } else {
           // If no topics found
           tags.push({
-            name: "No hay topics",
+            name: 'projects.no_topics',
             type: 'tertiary',
             icon: 'Unknown'
           });
@@ -120,7 +120,7 @@ export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
         return {
           repoName: repo.name,
           title: repo.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          description: repo.description || "Sin descripción disponible.",
+          description: repo.description,
           image: `https://opengraph.githubassets.com/1/${GITHUB_USERNAME}/${repo.name}`,
           tags: tags,
           demoUrl: repo.homepage || repo.html_url,

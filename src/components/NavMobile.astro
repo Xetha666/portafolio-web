@@ -4,19 +4,23 @@ import Home from "@/components/icons/Home.astro";
 import Projects from "@/components/icons/Projects.astro";
 import About from "@/components/icons/AboutIcon.astro";
 import Contact from "@/components/icons/Contact.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const IconMap: Record<string, any> = {
-  "Inicio": Home,
-  "Proyectos": Projects,
-  "Sobre mi": About,
-  "Contacto": Contact
+  "nav.home": Home,
+  "nav.projects": Projects,
+  "nav.about": About,
+  "nav.contact": Contact
 };
 ---
 
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 md:hidden glass-panel border-t border-brand-outline-variant/30 rounded-t-4xl shadow-nav dark:shadow-nav-dark">
   {
     Options.map((option, index) => {
-      const Icon = IconMap[option.name];
+      const Icon = IconMap[option.key];
       return (
         <a 
           href={option.href} 
@@ -29,7 +33,7 @@ const IconMap: Record<string, any> = {
           data-nav-link={option.href.replace("#", "")}
         >
           {Icon && <Icon class="size-5" />}
-          <span class="font-manrope text-[10px] uppercase tracking-widest mt-1">{option.name}</span>
+          <span class="font-manrope text-[10px] uppercase tracking-widest mt-1">{t(option.key as any)}</span>
         </a>
       );
     })

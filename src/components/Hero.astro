@@ -1,34 +1,38 @@
 ---
-import RightArrow from '/public/svg/RightArrow.svg'
-import Rocket from '/public/svg/Rocket.svg'
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import RightArrow from '/public/svg/RightArrow.svg';
+import Rocket from '/public/svg/Rocket.svg';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 <section class="mb-24 mt-12 scroll-mt-40 md:scroll-mt-44" id="hero">
   <div class="flex flex-col items-start gap-6">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/20 animate-fade-in animate-duration-700">
       <Rocket class="text-brand-primary size-3.5"/>
-      <span class="font-label select-none text-small uppercase tracking-widest text-brand-primary">Disponibilidad Inmediata</span>
+      <span class="font-label select-none text-small uppercase tracking-widest text-brand-primary">{t('hero.badge')}</span>
     </div>
     <h1 class="font-headline select-none text-5xl md:text-7xl font-bold leading-tight tracking-tighter text-glow animate-slide-in-left animate-duration-700 animate-delay-100">
-      Hola, soy Bryan
-      <span class="block text-transparent bg-clip-text bg-linear-to-r from-brand-primary via-brand-secondary to-brand-tertiary">desarrollador web</span>
+      {t('hero.greeting')}
+      <span class="block text-transparent bg-clip-text bg-linear-to-r from-brand-primary via-brand-secondary to-brand-tertiary">{t('hero.role')}</span>
     </h1>
     <p class="font-body select-none text-lg text-brand-on-surface-variant max-w-xl leading-relaxed animate-fade-in animate-duration-700 animate-delay-200">
-      Especializado en construir interfaces inmersivas y escalables. Transformando ideas complejas en experiencias digitales fluidas a través del código.
+      {t('hero.description')}
     </p>
     <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 animate-slide-in-bottom animate-duration-700 animate-delay-300">
       <a 
         href="#projects"
-        aria-label="Ver mis proyectos destacados"
+        aria-label={t('hero.projects')}
         class="ion-drive-button cursor-pointer px-8 py-4 rounded-xl font-bold font-label uppercase tracking-widest text-sm flex items-center justify-center gap-2 text-black active:scale-95 transition-transform"
       >
-        Ver Proyectos
+        {t('hero.projects')}
         <RightArrow class="text-base size-4"/>
       </a>
       <a 
         href="#contact"
         class="glass-panel cursor-pointer ghost-border px-8 py-4 rounded-xl text-brand-primary font-bold font-label uppercase tracking-widest text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
       >
-        Contactar
+        {t('hero.contact')}
       </a>
     </div>
   </div>

@@ -1,24 +1,23 @@
-interface Menu {
-  name: string;
+export interface MenuOption {
+  key: string;
   href: string;
 }
 
-export const Options: Menu[] = 
-[
+export const Options: MenuOption[] = [
   {
-    name: "Inicio",
+    key: "nav.home",
     href: "#hero",
   },
   {
-    name: "Proyectos",
+    key: "nav.projects",
     href: "#projects",
   },
   {
-    name: "Sobre mi",
+    key: "nav.about",
     href: "#about",
   },
   {
-    name: "Contacto",
+    key: "nav.contact",
     href: "#contact",
   },
-]
+];

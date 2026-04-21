@@ -12,6 +12,7 @@ import TypeScriptIcon from "@/components/icons/TypeScript.astro";
 import UnknownIcon from "@/components/icons/Unknown.astro";
 import VercelIcon from "@/components/icons/VercelIcon.astro";
 import ProjectModal from "@/components/ProjectModal.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import type { Tag } from "@/types/project";
 import { Image } from 'astro:assets';
 import ContactSupport from "public/svg/ContactSupport.svg";
@@ -20,9 +21,22 @@ import OpenCode from "public/svg/OpenCode.svg";
 import OpenDemo from "public/svg/OpenDemo.svg";
 import PublicIcon from "public/svg/World.svg";
 
-const { title, description, image, tags, demoUrl, repoUrl, isPrivate = false, class: className } = Astro.props;
+const { 
+  title, 
+  description, 
+  image, 
+  tags, 
+  demoUrl, 
+  repoUrl, 
+  isPrivate = false, 
+  lang: propLang,
+  class: className 
+} = Astro.props;
 
-// Determine if we should use the fallback (if it's the generic GitHub OG image)
+const lang = propLang || getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Determine if we should use the fallback
 const isGithubFallback = typeof image === 'string' && image.includes('opengraph.githubassets.com');
 
 const iconMap = {
@@ -53,7 +67,7 @@ const iconMap = {
     ) : (
       <Image 
         src={image as any}
-        alt={`Miniatura del proyecto ${title}`} 
+        alt={`${t('project.alt_thumbnail')} ${title}`} 
         class="project-image w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-zoom-in"
         loading="lazy"
         data-project-title={title}
@@ -88,7 +102,7 @@ const iconMap = {
       ]}>
         <span class="flex items-center gap-1.5">
           {isPrivate ? <LockIcon class="size-4"/> : <PublicIcon class="size-4"/>}
-          {isPrivate ? 'Privado' : 'Público'}
+          {isPrivate ? t('project.private') : t('project.public')}
         </span>
       </span>
     </div>
@@ -109,7 +123,7 @@ const iconMap = {
         target={isPrivate ? "_self" : "_blank"}
         rel={isPrivate ? "" : "noopener noreferrer"}
       >
-        {isPrivate ? "Solicitar Acceso" : "Ver Demo"}
+        {isPrivate ? t('project.request_access') : t('project.show_demo')}
         {isPrivate ? <ContactSupport class="size-6 active:scale-90 hover:scale-110 transition-transform" aria-hidden="true" /> : <OpenDemo class="size-6 active:scale-90 hover:scale-110 transition-transform" aria-hidden="true" />}
       </a>
       
@@ -118,7 +132,7 @@ const iconMap = {
           href={repoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Ver código fuente de ${title} en GitHub`}>
+          aria-label={`${t('project.source_code')} ${title}`}>
           <OpenCode class="size-6" aria-hidden="true" />
         </a>
       )}

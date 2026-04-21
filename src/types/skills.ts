@@ -19,12 +19,14 @@ export interface SkillItem {
 
 export interface SkillCategory {
   title: string;
+  titleEn?: string;
   items: SkillItem[];
 }
 
 export const skillCategories: SkillCategory[] = [
   {
     title: "Arquitectura Frontend",
+    titleEn: "Frontend Architecture",
     items: [
       { name: "Astro", Icon: AstroIcon },
       { name: "React", Icon: React },
@@ -37,6 +39,7 @@ export const skillCategories: SkillCategory[] = [
   },
   {
     title: "Backend y Ecosistema",
+    titleEn: "Backend & Ecosystem",
     items: [
       { name: "Astro DB", Icon: AstroDB },
       { name: "Cloudflare", Icon: Cloudflare },

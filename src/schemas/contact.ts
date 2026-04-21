@@ -14,7 +14,7 @@ export const ContactSchema = z.object({
   email: z
     .string()
     .trim()
-    .email({ message: "Por favor, ingresa un correo electrónico válido" })
+    .email("Por favor, ingresa un correo electrónico válido")
     .toLowerCase(),
 
   asunto: z

@@ -3,20 +3,24 @@ import logoDark from "@/assets/logo-dark.webp";
 import logoLight from "@/assets/logo-light.webp";
 import Background from "@/components/Background.astro";
 import "@/styles/global.css";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 
 interface Props {
 	title?: string;
 	description?: string;
 }
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
 const { 
-	title = "Bryan Dev | Fullstack Developer Portfolio", 
-	description = "Explora el portafolio de Bryan, desarrollador Fullstack especializado en interfaces modernas con React, Astro y Tailwind CSS." 
+	title = t('site.title'), 
+	description = t('site.description')
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
 	<head>
 		<title>{title}</title>
 		<meta charset="UTF-8" />
@@ -31,7 +35,7 @@ const {
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content={Astro.url} />
-		<meta property="og:site_name" content="Bryan Dev | Portafolio" />
+		<meta property="og:site_name" content={t('site.og_site_name')} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content="/og-image.png" />

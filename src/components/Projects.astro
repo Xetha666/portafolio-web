@@ -13,10 +13,39 @@ import TypeScriptIcon from "@/components/icons/TypeScript.astro";
 import UnknownIcon from "@/components/icons/Unknown.astro";
 import VercelIcon from "@/components/icons/VercelIcon.astro";
 import { fetchGithubRepos } from "@/services/github";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { ui, projectDescriptions } from "@/i18n/ui";
+
+interface Props {
+  lang?: keyof typeof ui;
+}
+
+const { lang: propLang } = Astro.props;
+const lang = propLang || getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const runtime = Astro.locals.runtime;
 const token = runtime?.env?.GITHUB_TOKEN;
-const projects = await fetchGithubRepos(token);
+const fetchedProjects = await fetchGithubRepos(token);
+
+// Map projects to include translated descriptions
+const projects = fetchedProjects.map(project => {
+  // Translate tags if they are keys
+  const translatedTags = project.tags.map(tag => ({
+    ...tag,
+    name: tag.name.includes('.') ? t(tag.name as any) : tag.name
+  }));
+
+  const mapping = projectDescriptions[project.repoName];
+  if (mapping && mapping[lang]) {
+    return { ...project, tags: translatedTags, description: mapping[lang] };
+  }
+  // Fallback to "No description available" if not even the GitHub one exists
+  if (!project.description) {
+    return { ...project, tags: translatedTags, description: projectDescriptions['default_fallback'][lang] };
+  }
+  return { ...project, tags: translatedTags };
+});
 
 // Load all optimized images from the projects folder
 const projectImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/projects/*.{jpeg,jpg,png,gif,webp}', { eager: true });
@@ -50,24 +79,24 @@ const iconMap = {
   <div class="flex flex-col gap-8">
     <!-- Title always on top -->
     <div class="flex flex-col gap-2 timeline-view animate-slide-in-left animate-range-[entry_5%_contain_25%]">
-      <h2 class="font-headline text-3xl font-bold mb-2">Proyectos Seleccionados</h2>
-      <p class="font-body text-brand-on-surface-variant">Explora mis trabajos más recientes.</p>
+      <h2 class="font-headline text-3xl font-bold mb-2">{t('projects.title')}</h2>
+      <p class="font-body text-brand-on-surface-variant">{t('projects.subtitle')}</p>
     </div>
 
     <!-- Filters centered below title -->
     <div class="flex flex-col items-center gap-4 timeline-view animate-fade-in animate-range-[entry_5%_contain_30%]">
       <span class="font-label text-xs font-bold uppercase tracking-widest text-brand-on-surface-variant flex items-center gap-2">
         <span class="size-1.5 rounded-full bg-brand-primary animate-pulse"></span>
-        Filtrar por tecnología
+        {t('projects.filter_by')}
       </span>
-      <nav class="flex flex-wrap justify-center gap-4" aria-label="Filtrar proyectos">
+      <nav class="flex flex-wrap justify-center gap-4" aria-label={t('projects.filter_aria')}>
         {uniqueTechs.map(tech => {
           const Icon = iconMap[tech.icon as keyof typeof iconMap];
           return (
             <button 
               type="button"
               aria-pressed="false"
-              aria-label={`Filtrar por ${tech.name}`}
+              aria-label={`${t('projects.filter_btn_aria')} ${tech.name}`}
               class="filter-btn group cursor-pointer flex flex-col items-center justify-center gap-2 w-24 h-24 p-2 rounded-2xl glass-panel ghost-border transition-all duration-300 hover:border-brand-primary/50 text-center"
               data-tech={tech.icon}
             >
@@ -82,11 +111,11 @@ const iconMap = {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 projects-grid">
-      {projects.map((project, i) => {
-        // Resolve the image: Look in local assets first (matching repo name), then fallback to GitHub OG image
+      {projects.map((project) => {
+        // Resolve the image
         const localImage = projectImages[`/src/assets/projects/${project.repoName}.webp`]?.default;
         
-        return <CardProject {...project} image={localImage || project.image} class={`timeline-view animate-zoom-in animate-range-[entry_5%_contain_30%]`} />
+        return <CardProject {...project} lang={lang} image={localImage || project.image} class={`timeline-view animate-zoom-in animate-range-[entry_5%_contain_30%]`} />
       })}
     </div>
   </div>
@@ -112,7 +141,6 @@ const iconMap = {
   function setupFilters() {
     const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
     const cards = document.querySelectorAll<HTMLElement>('.card-project');
-    // Set of currently active filters; empty = show all
     const activeFilters = new Set<string>();
 
     buttons.forEach(btn => {
@@ -120,7 +148,6 @@ const iconMap = {
         const tech = btn.getAttribute('data-tech');
         if (!tech) return;
 
-        // Toggle: add if not present, remove if already active
         if (activeFilters.has(tech)) {
           activeFilters.delete(tech);
         } else {
@@ -132,7 +159,6 @@ const iconMap = {
     });
 
     function applyFilters() {
-      // Update button active state
       buttons.forEach(btn => {
         const tech = btn.getAttribute('data-tech') ?? '';
         const isActive = activeFilters.has(tech);
@@ -148,10 +174,8 @@ const iconMap = {
         }
       });
 
-      // Update card visibility
       cards.forEach(card => {
         const techs = card.dataset.techs?.split(',') ?? [];
-        // Show all if no filter selected, otherwise show if any tech matches
         const isVisible =
           activeFilters.size === 0 ||
           techs.some(t => activeFilters.has(t));
@@ -172,13 +196,9 @@ const iconMap = {
       });
     }
 
-    // Initial state: no filters active, all cards visible
     applyFilters();
   }
 
-  // Run on first load
   setupFilters();
-
-  // Run on view transition (if using Astro View Transitions)
   document.addEventListener('astro:after-swap', setupFilters);
 </script>
