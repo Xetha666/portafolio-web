@@ -1,11 +1,15 @@
 ---
 import Home from "@/components/icons/Home.astro";
+import { getLangFromUrl, useTranslations } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import Rocket from "public/svg/Rocket.svg";
 import World from "public/svg/World.svg";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
-<Layout title="404 - Pagina no encontrada">
+<Layout title={t('404.title')}>
   <main class="relative z-10 w-full min-h-screen grid place-items-center px-6 overflow-hidden">
     <!-- Elementos Decorativos Espaciales con mayor opacidad -->
     <div class="absolute top-1/4 left-1/10 text-brand-primary opacity-30 animate-float pointer-events-none">
@@ -34,20 +38,20 @@ import World from "public/svg/World.svg";
       
       <div class="space-y-6 max-w-lg">
         <!-- Título con contraste máximo -->
-        <h2 class="font-headline text-3xl md:text-5xl font-bold tracking-tight text-brand-on-surface">Misión Interrumpida</h2>
+        <h2 class="font-headline text-3xl md:text-5xl font-bold tracking-tight text-brand-on-surface">{t('404.mission')}</h2>
         <!-- Texto descriptivo con contraste mejorado -->
         <p class="font-body text-brand-on-surface text-lg md:text-xl leading-relaxed opacity-95">
-          Parece que has entrado en un agujero de gusano. La página que buscas ha derivado fuera de nuestro alcance.
+          {t('404.description')}
         </p>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mt-6">
         <a 
-          href="/" 
+          href={lang === 'es' ? '/' : `/${lang}/`} 
           class="ion-drive-button group cursor-pointer px-10 py-5 rounded-2xl text-black font-bold font-label uppercase tracking-widest text-sm flex items-center justify-center gap-3 active:scale-95 transition-all hover:shadow-brand-404"
         >
           <Home class="size-5 transition-transform group-hover:-translate-y-1" />
-          Volver a la Base
+          {t('404.back_home')}
         </a>
       </div>
     </div>
