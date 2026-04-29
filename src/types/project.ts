@@ -1,6 +1,6 @@
 import type { ImageMetadata } from 'astro';
 
-export type IconName = 'Astro' | 'Tailwind' | 'Daisyui' | 'TypeScript' | 'JavaScript' | 'React' | 'Nextjs' | 'Nodejs' | 'AstroDB' | 'GithubActions'| 'Cloudflare' | 'Vercel' | 'Unknown';
+export type IconName = 'Astro' | 'Tailwind' | 'Daisyui' | 'TypeScript' | 'JavaScript' | 'React' | 'Nextjs' | 'Nodejs' | 'AstroDB' | 'GithubActions'| 'Cloudflare' | 'Vercel' | 'Unknown' | 'Github' | 'Supabase' | 'ReactNative';
 
 export interface Tag {
   name: string;
@@ -17,5 +17,6 @@ export interface Project {
   tags: Tag[];
   demoUrl: string;
   repoUrl: string;
+  inProgress?: boolean;
   class?: string;
 }
