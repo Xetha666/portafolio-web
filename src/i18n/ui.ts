@@ -220,6 +220,11 @@ export const ui = {
 } as const;
 
 export const projectDescriptions: Record<string, Record<string, string>> = {
+  'inventory-manager':{
+    es: 'Aplicación nativa de alto rendimiento para el control de inventarios en tiempo real, optimizada para la gestión eficiente de stock y logística móvil',
+    en: 'High-performance native application for real-time inventory control, optimized for efficient stock management and mobile logistics',
+    id: 'Aplikasi asli berkinerja tinggi untuk kontrol inventaris waktu nyata, dioptimalkan untuk manajemen stok yang efisien dan logistik seluler',
+  },
   'portafolio-web': {
     es: 'Portafolio minimalista construido con Astro, React y Tailwind CSS.',
     en: 'Minimalist portfolio built with Astro, React, and Tailwind CSS.',
