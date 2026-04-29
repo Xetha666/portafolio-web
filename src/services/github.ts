@@ -29,6 +29,8 @@ const ICON_MAPPING: Record<string, IconName> = {
   'github-actions': 'GithubActions',
   'cloudflare': 'Cloudflare',
   'vercel': 'Vercel',
+  'react-native': 'ReactNative',
+  'supabase': 'Supabase',
 };
 
 const DISPLAY_NAME_MAPPING: Record<string, string> = {
@@ -45,6 +47,8 @@ const DISPLAY_NAME_MAPPING: Record<string, string> = {
   'github-actions': 'GitHub Actions',
   'cloudflare': 'Cloudflare',
   'vercel': 'Vercel',
+  'react-native': 'React Native',
+  'supabase': 'Supabase',
 };
 
 const getDisplayName = (tech: string): string => {
@@ -88,9 +92,12 @@ export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
       .map(repo => {
         const tags: Tag[] = [];
         
-        // Trust ONLY topics as requested by the user
-        if (repo.topics && repo.topics.length > 0) {
-          repo.topics.forEach(topic => {
+        // Trust ONLY topics as requested by the user, excluding status topics
+        const statusTopics = ['in-progress', 'development'];
+        const techTopics = repo.topics?.filter(topic => !statusTopics.includes(topic.toLowerCase())) || [];
+
+        if (techTopics.length > 0) {
+          techTopics.forEach(topic => {
             const icon = getIconForTech(topic);
             const name = getDisplayName(topic);
             
@@ -125,7 +132,8 @@ export const fetchGithubRepos = async (token?: string): Promise<Project[]> => {
           tags: tags,
           demoUrl: repo.homepage || repo.html_url,
           repoUrl: repo.html_url,
-          isPrivate: repo.private
+          isPrivate: repo.private,
+          inProgress: repo.topics?.some(topic => topic.toLowerCase() === 'in-progress' || topic.toLowerCase() === 'development')
         };
       });
   } catch (error) {
